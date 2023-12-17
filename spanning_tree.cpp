@@ -126,6 +126,7 @@ void Node::merge(Node* rhs){
     delete repr2;
 }
 
+/*
 vector<tuple<int,int,int>> prim(int n, const vector<tuple<int,int,int>>& edges){ //no need to modify 
     /*
     1. the idea is to add each edge sequentially. so we want to add each edge that is accessible from the current tree 
@@ -133,7 +134,7 @@ vector<tuple<int,int,int>> prim(int n, const vector<tuple<int,int,int>>& edges){
     3. then go through the adjacency list of edges to find the weights 
     4. then process the node that is the min val 
     5. then add mroe weights 
-    */
+    
 
     vector<vector<const tuple<int,int,int>*>> adjlst(n); //no changes to the ptrs 
     for (auto edge: edges){
@@ -144,24 +145,20 @@ vector<tuple<int,int,int>> prim(int n, const vector<tuple<int,int,int>>& edges){
 
     vector<tuple<int,int,int>> answer;
     vector<bool> added(n,false);
-    priority_queue<Node2::Node_Iter, vector<Node2::Node_Iter>, less<Node2::Node_Iter>> heap;
+    vector<Node2::Node_Iter> heap;
+
+    //priority_queue<Node2::Node_Iter, vector<Node2::Node_Iter>, less<Node2::Node_Iter>> heap;
     vector<Node2*> nodes;
 
     for (int i = 0; i < n; ++i){ //make the nodes for the priority queue 
         nodes.push_back(new Node2(i, INT_MAX));
+        heap.push_back(Node2::Node_Iter(*nodes.back()));
     }// Space = O(v), Time = O(v)
 
-    for (auto val : nodes){ //add the nodes into the priority queue 
-        heap.push(Node2::Node_Iter(*val));
-    }// Space = O(v), Time = O(vlogv) //can reduce to O(v) for time if heapify an array 
+    make_heap(heap.begin(), heap.end());
 
     while (heap.size()){ //prim's algo might make forest of trees? wait kruskal's algo might as well! adsfsafd
-        Node2::Node_Iter currNode = heap.top();
-        /*
-        int vert = (*currNode).vertex;
-        int dist = (*currNode).distance;
-        const tuple<int,int,int>* camefrom = (*currNode).came_from; //edge that we came from
-        */
+        Node2::Node_Iter currNode = heap[0];
 
         if ((*currNode).distance == INT_MAX){ //not vaid
             (*currNode).distance = 0;
@@ -169,11 +166,11 @@ vector<tuple<int,int,int>> prim(int n, const vector<tuple<int,int,int>>& edges){
         else{ //add the edge that made them 
             answer.push_back(*(*currNode).came_from); //the copy of the value we have 
         }
-        heap.pop();
+        pop_heap(heap.begin(), heap.end());
+        heap.pop_back(); //actually remove from vector 
         added[(*currNode).vertex] = true; //put in the added list 
         
         for (const tuple<int,int,int>* edge: adjlst[(*currNode).vertex]){
-            /*get the node, delete the node, input new weight, insert the node*/
             int dest = get<1>(*edge);
             int weight = get<2>(*edge);
             if (!added[dest]){ //not added already 
@@ -181,30 +178,24 @@ vector<tuple<int,int,int>> prim(int n, const vector<tuple<int,int,int>>& edges){
                 if (currdistance > weight){
                     nodes[dest]->distance = weight;
                     nodes[dest]->came_from = edge; //edge is on the stack 
-                    //how t odelete the value from the heap?!!! 
+                    //must be a smaller val how 
 
+                    //implement the heapify in here 
+                    int index = 0;
+                    auto heaploc = &heap;
 
-
-                    //not gonna need this! do not do this anymore! stop this deal. heapify this thing 
-                    //don't worry about this too much just analyze the runtime at this point
+                    
                 }
             }
         }
     }
-    
-
-
-/*
-    while (heap.size()){
-        const Node2::Node_Iter itr = heap.top();
-        cout << *itr << endl;
-        heap.pop(); 
-    }*/
-
-
 
     return answer;
 }
+*/
+
+
+
 
 bool sortbythird(const tuple<int, int, int>& a,  
                const tuple<int, int, int>& b) 
@@ -264,7 +255,7 @@ int main(){
 
     
 
-    prim(n, edges);
+    //prim(n, edges);
 
     /*
     auto answer = kruskal(n, edges);
